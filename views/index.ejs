@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/socket.io/socket.io.js"></script> <!-- Add Socket.io client -->
+</head>
+<body>
+    <nav>
+        <div class="nav-wrapper">
+            <a href="/" class="brand-logo center">Student Portal</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h3 class="center-align">Student Queries</h3>
+        <ul id="query-list" class="collection">
+            <% queries.forEach(query => { %>
+                <li class="collection-item">
+                    <strong><%= query.studentName %></strong>: <%= query.queryText %> <br>
+                    <em><%= query.createdAt.toDateString() %></em>
+                </li>
+            <% }) %>
+        </ul>
+    </div>
+
+    <script>
+        // Connect to the socket.io server
+        const socket = io();
+
+        // Listen for 'newQuery' events from the server
+        socket.on('newQuery', function(data) {
+            const queryList = document.getElementById('query-list');
+            const newQuery = `
+                <li class="collection-item">
+                    <strong>${data.studentName}</strong>: ${data.queryText} <br>
+                    <em>${new Date().toDateString()}</em>
+                </li>`;
+            queryList.innerHTML = newQuery + queryList.innerHTML;
+        });
+    </script>
+</body>
+</html>
